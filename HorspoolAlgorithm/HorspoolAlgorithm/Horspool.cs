@@ -4,56 +4,52 @@ using System.Linq;
 
 namespace HorspoolAlgorithm
 {
-    public class Horspool
+    public static class Horspool
     {
-        private readonly string _pattern;
-
-        private readonly string _text;
-
-        public Horspool(string pattern, string text)
-        {
-            this._pattern = pattern;
-            this._text = text;
-        }
-
-        private Dictionary<char, int> ShiftTable()
+        private static Dictionary<char, int> ShiftTable(string pattern, string text)
         {
             Dictionary<char, int> table = new Dictionary<char, int>();
 
-            for (int i = 0; i < _text.Length; i++)
+            for (int i = 0; i < text.Length; i++)
             {
-                if (!table.Keys.Contains(_text[i]))
-                    table.Add(_text[i], _pattern.Length);
+                if (!table.Keys.Contains(text[i]))
+                    table.Add(text[i], pattern.Length);
             }
 
-            for (int j = 0; j < _pattern.Length - 1; j++)
+            for (int j = 0; j < pattern.Length - 1; j++)
             {
-                table[_pattern[j]] = _pattern.Length - 1 - j;
+                table[pattern[j]] = pattern.Length - 1 - j;
             }
 
             return table;
         }
 
-        public int HorspoolMatching()
+        public static int HorspoolMatching(string pattern, string text)
         {
-            var table = ShiftTable();
+            if (pattern.Length > text.Length)
+                return -1;
 
-            var i = _pattern.Length - 1;
+            if (pattern.Except(text).Any())
+                return -1;
 
-            while (i < _text.Length)
+            var table = ShiftTable(pattern,text);
+
+            var i = pattern.Length - 1;
+
+            while (i < text.Length)
             {
                 var k = 0;
-                while (k < _pattern.Length && _pattern[_pattern.Length -1 - k] == _text[i - k])
+                while (k < pattern.Length && pattern[pattern.Length -1 - k] == text[i - k])
                 {
                     k += 1;
                 }
-                if (k == _pattern.Length)
+                if (k == pattern.Length)
                 {
-                    return i - _pattern.Length + 1;
+                    return i - pattern.Length + 1;
                 }
                 else
                 {
-                    i += table[_text[i]];
+                    i += table[text[i]];
                 }
             }
             return -1;
